@@ -4,10 +4,14 @@ import org.my.springDemo.entity.Customer;
 import org.my.springDemo.service.CustomerService;
 import org.my.springDemo.util.SortUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -17,6 +21,12 @@ public class CustomerController {
     //injecting the customer service
     @Autowired
     private CustomerService customerService;
+
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder){
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class,stringTrimmerEditor);
+    }
 
     @GetMapping("/list")
     public String listCustomers(Model model, @RequestParam(required = false) String sort) {
@@ -44,10 +54,13 @@ public class CustomerController {
     }
 
     @PostMapping("/saveCustomer")
-    public String saveCustomer(@ModelAttribute("customer") Customer theCustomer) {
-      //save the customer using service
-      customerService.saveCustomer(theCustomer);
-      return "redirect:/customer/list";
+    public String saveCustomer(
+            @Valid @ModelAttribute("customer") Customer theCustomer,
+            BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) return "customer-form";
+        //save the customer using service
+        customerService.saveCustomer(theCustomer);
+        return "redirect:/customer/list";
     }
 
     @GetMapping("/showFormForUpdate")

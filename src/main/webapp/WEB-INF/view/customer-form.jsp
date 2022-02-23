@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Save customer</title>
+    <style>.error{color:red}</style>
     <link type="text/css"
               rel="stylesheet"
               href="${pageContext.request.contextPath}/resources/css/style.css"/>
@@ -27,8 +28,12 @@
             <table>
                 <tbody>
                     <tr>
-                           <td><label>First name:</label></td>
-                           <td><form:input path="firstName"/></td>
+                        <td><label>First name*:</label></td>
+                        <td>
+                            <form:input path="firstName"/>
+                            <form:errors path="firstName" cssClass="error"/>
+                        </td>
+
                     </tr>
                     <tr>
                             <td><label>Last name:</label></td>
