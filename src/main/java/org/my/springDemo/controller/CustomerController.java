@@ -2,6 +2,7 @@ package org.my.springDemo.controller;
 
 import org.my.springDemo.entity.Customer;
 import org.my.springDemo.service.CustomerService;
+import org.my.springDemo.util.SortUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +19,18 @@ public class CustomerController {
     private CustomerService customerService;
 
     @GetMapping("/list")
-    public String listCustomers(Model model) {
+    public String listCustomers(Model model, @RequestParam(required = false) String sort) {
         //get customers from service
-        List<Customer> theCustomers = customerService.getCustomers();
+        List<Customer> theCustomers;
+        // check for sort field
+        if (sort != null) {
+            int theSortField = Integer.parseInt(sort);
+            theCustomers = customerService.getCustomers(theSortField);
+        }
+        else {
+            // no sort field provided ... default to sorting by last name
+            theCustomers = customerService.getCustomers(SortUtils.LAST_NAME);
+        }
         //add the customers to the model
         model.addAttribute("customers", theCustomers);
         return "list-customers";
